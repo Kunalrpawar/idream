@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workplace Survey Form</title>
+    <style>
+        /* Basic Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        /* Form Styling */
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Response Box Styling */
+        .response-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 30px auto;
+        }
+
+        .response-box h4 {
+            font-size: 24px;
+            color: #4CAF50;
+        }
+
+        .response-box p {
+            font-size: 18px;
+            color: #555;
+        }
+
+        .response-box .suggestion {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f1f8e9;
+            border-left: 5px solid #4CAF50;
+            font-size: 16px;
+            color: #333;
+            border-radius: 5px;
+        }
+
+        .response-box .suggestion p {
+            margin: 0;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .response-box {
+                padding: 15px;
+            }
+
+            button {
+                padding: 10px;
+            }
+
+            form {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Workplace Survey Form</h1>
+    
+    <form id="survey-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="physical_environment">Physical Environment (1-5):</label>
+        <input type="number" id="physical_environment" name="physical_environment" min="1" max="5" required>
+
+        <label for="technology_usability">Technology Usability (1-5):</label>
+        <input type="number" id="technology_usability" name="technology_usability" min="1" max="5" required>
+
+        <label for="collaboration_tools">Collaboration Tools (1-5):</label>
+        <input type="number" id="collaboration_tools" name="collaboration_tools" min="1" max="5" required>
+
+        <label for="wellness_programs">Wellness Programs (1-5):</label>
+        <input type="number" id="wellness_programs" name="wellness_programs" min="1" max="5" required>
+
+        <label for="managerial_support">Managerial Support (1-5):</label>
+        <input type="number" id="managerial_support" name="managerial_support" min="1" max="5" required>
+
+        <button type="submit">Submit</button>
+        
+        <p id="error-message" class="error"></p>
+    </form>
+
+    <div id="response-box"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Handle form submission with AJAX
+        $('#survey-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting traditionally
+
+            // Clear previous error message
+            $('#error-message').text('');
+            $('#response-box').empty();  // Clear previous response
+
+            // Get form data
+            var formData = $(this).serialize();
+
+            // Send form data using AJAX
+            $.ajax({
+                type: 'POST',
+                url: '/',
+                data: formData,
+                success: function(response) {
+                    if (response.error) {
+                        $('#error-message').text(response.error);
+                    } else {
+                        // Display AI response
+                        var responseHtml = '<div class="response-box">';
+                        responseHtml += '<h4>AI Analysis:</h4>';
+                        responseHtml += '<p><strong>Your Workplace Score: ' + response.workplace_score + ' / 5</strong></p>';
+                        responseHtml += '<h5>Suggestions for Improvement:</h5>';
+                        response.suggestions.forEach(function(suggestion) {
+                            responseHtml += '<div class="suggestion"><p>' + suggestion + '</p></div>';
+                        });
+                        responseHtml += '</div>';
+                        $('#response-box').html(responseHtml);
+                    }
+                },
+                error: function() {
+                    $('#error-message').text('An error occurred. Please try again.');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
